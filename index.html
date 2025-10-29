@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Form</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+        form { display: flex; flex-direction: column; gap: 10px; }
+        input, textarea { padding: 10px; }
+        button { padding: 10px; background: #4285F4; color: white; border: none; cursor: pointer; }
+        #response { margin-top: 20px; color: green; }
+    </style>
+</head>
+<body>
+    <h1>Submit Your Response</h1>
+    <form id="myForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" required></textarea>
+        
+        <button type="submit">Submit</button>
+    </form>
+    <div id="response"></div>
+
+    <script>
+        const form = document.getElementById('myForm');
+        const responseDiv = document.getElementById('response');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+
+            try {
+                const res = await fetch('/.netlify/functions/submit-form', {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (res.ok) {
+                    responseDiv.textContent = 'Form submitted successfully!';
+                    form.reset();
+                } else {
+                    responseDiv.textContent = 'Error submitting form.';
+                }
+            } catch (error) {
+                responseDiv.textContent = 'Network error.';
+            }
+        });
+    </script>
+</body>
+</html>
